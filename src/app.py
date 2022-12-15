@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Characters, Planets, Vehicles
 #from models import Person
 
 app = Flask(__name__)
@@ -16,7 +16,8 @@ app.url_map.strict_slashes = False
 
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
+        "postgres://", "postgresql://")
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -26,16 +27,58 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+# Characters HERE
+characters = [
+    {
+        "id": 1,
+        "name": 'Luke Skywalker'
+    },
+    {
+        "id": 2,
+        "name": 'Darth Vader'
+    }
+]
+
+# Planets HERE
+planets = [
+    {
+        "id": 1,
+        "name": 'Tatooine'
+    },
+    {
+        "id": 2,
+        "name": 'Mustafar'
+    }
+]
+
+# Vehicles HERE
+vehicles = [
+    {
+        "id": 1,
+        "name": 'X-34 Landspeeder'
+    },
+    {
+        "id": 2,
+        "name": 'Death Star'
+    }
+]
+
 # Handle/serialize errors like a JSON object
+
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
+
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
 
+
+# Users HERE
 @app.route('/user', methods=['GET'])
 def handle_hello():
 
@@ -44,6 +87,25 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+# Characters HERE
+@app.route('/characters', methods=['GET'])
+def get_characters():
+    json_text = jsonify(characters)
+    return json_text, 200
+
+# Planets HERE
+@app.route('/planets', methods=['GET'])
+def get_planets():
+    json_text = jsonify(planets)
+    return json_text, 200
+
+# Vehicles HERE
+@app.route('/vehicles', methods=['GET'])
+def get_vehicles():
+    json_text = jsonify(vehicles)
+    return json_text, 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
